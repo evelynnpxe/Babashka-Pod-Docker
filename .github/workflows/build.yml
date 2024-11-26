@@ -1,0 +1,37 @@
+name: Build and Test Babashka Pod Docker
+
+on:
+  push:
+    branches:
+      - main  # El flujo de trabajo se ejecuta cuando haces push a la rama main
+  pull_request:
+    branches:
+      - main  # También se ejecuta cuando hay un pull request hacia la rama main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Usaremos Ubuntu como el entorno de ejecución
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Realiza el checkout del código fuente desde GitHub
+
+    - name: Set up Go
+      uses: actions/setup-go@v2  # Configura Go en el entorno de ejecución
+      with:
+        go-version: '1.20'  # Asegúrate de usar la versión de Go que necesitas
+
+    - name: Install dependencies
+      run: go mod tidy  # Instala las dependencias necesarias para Go
+
+    - name: Build the binary
+      run: go build -o babashka-pod-docker  # Compila el binario de tu proyecto
+
+    - name: Run tests
+      run: go test ./...  # Ejecuta las pruebas para verificar que todo funciona bien
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2  # Sube el binario compilado como artefacto
+      with:
+        name: babashka-pod-docker-binary
+        path: babashka-pod-docker  # Especifica la ruta del binario generado
