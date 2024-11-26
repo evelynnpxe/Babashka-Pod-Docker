@@ -1,0 +1,58 @@
+name: Build and Deploy
+
+# Este workflow se ejecuta en los eventos de push o pull_request en la rama 'main'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Ejecuta en una máquina virtual Ubuntu
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Paso 2: Configurar Go
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.23.3'  # Asegúrate de usar la versión que prefieras
+
+      # Paso 3: Instalar dependencias de Go
+      - name: Install dependencies
+        run: |
+          go mod download
+
+      # Paso 4: Construir el proyecto Go
+      - name: Build Go project
+        run: |
+          go build -o babashka-pod-docker
+
+      # Paso 5: Crear la imagen Docker
+      - name: Build Docker image
+        run: |
+          docker build -t my-docker-image .
+
+      # Paso 6: Iniciar sesión en Docker Hub (si quieres subir la imagen)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Define el secreto en GitHub
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Define el secreto en GitHub
+
+      # Paso 7: Subir la imagen Docker (opcional)
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push my-docker-image
+
+      # Paso 8: Desplegar en tu entorno (si lo tienes configurado)
+      # Por ejemplo, puedes usar 'scp' para subir a un servidor, o acciones específicas para GCP, AWS, etc.
+      - name: Deploy to server (ejemplo)
+        run: |
+          scp -i /path/to/your/private/key my-docker-image user@server:/path/to/deploy
+
