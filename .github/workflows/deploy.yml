@@ -1,25 +1,43 @@
-name: Deploy to Server
+name: Deploy
 
 on:
   push:
     branches:
-      - main  # o cualquier rama que desees que active este flujo
+      - main  # O la rama en la que deseas que se ejecute el despliegue
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
+      # 1. Checkout del código
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # 2. Configurar la clave SSH para el despliegue
       - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+      # 3. Ejecutar comandos de despliegue directamente
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash -s' < ./deploy.sh
+          echo "Iniciando despliegue..."
+          
+          # Comandos de despliegue: (Ejemplo para un proyecto Node.js)
+          # Clona el repositorio si no está ya presente en el servidor
+          git clone https://github.com/evelynnpxe/Babashka-Pod-Docker.git
+          cd Babashka-Pod-Docker
+          
+          # Instalar dependencias (si aplica)
+          npm install
+          
+          # Construir proyecto (si aplica)
+          npm run build
+          
+          # Reiniciar servicios (si es necesario, ajustar el nombre del servicio)
+          sudo systemctl restart nombre_del_servicio
+          
+          echo "Despliegue completo"
+
