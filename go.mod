@@ -2,10 +2,11 @@ module babashka-pod-docker
 
 go 1.21
 
+toolchain go1.23.3
+
 require (
 	github.com/atomist-skills/go-skill v0.0.56
 	github.com/docker/distribution v2.8.3+incompatible
-	github.com/jackpal/bencode-go v1.0.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/moby/buildkit v0.13.1
 	github.com/moby/patternmatcher v0.6.0
@@ -27,6 +28,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
+	github.com/jackpal/bencode-go v1.0.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
